@@ -161,3 +161,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157aab0587b75ad40b1b59635826023b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  color: 4

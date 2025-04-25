@@ -15,7 +15,6 @@ public class BallShooter : MonoBehaviour {
 
     //×´Ì¬¿ØÖÆ
     public bool isAiming;
-    [SerializeField] private bool isShooting;
 
     //Ð¡Çò
     [SerializeField] private List<GameObject> ballPrefab = new List<GameObject>();
@@ -43,6 +42,7 @@ public class BallShooter : MonoBehaviour {
         if (ballInScreen > 0) return;
         ballbag.ReloadCheck();
         StartAim();
+        ballbag.NextColor();
         pos = Mathf.Clamp(pos, -7, 7);
         Vector3 v = new Vector3(pos, transform.position.y, transform.position.z);
         transform.position = v;
@@ -78,7 +78,6 @@ public class BallShooter : MonoBehaviour {
     }
     //·¢Éä
     private void ShootBall() {
-        //isShooting = true;
         currentPrefab = ballPrefab[ballbag.GetCurrentIndex()];
         StopAim();
     }

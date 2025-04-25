@@ -18,7 +18,8 @@ public class BallBag : MonoBehaviour {
     [SerializeField] private GameObject currentBallImage;
 
     private void Start() {
-        ReloadTurnBall();
+        UpdateAllBallCount();
+        InitiateTurnBall();
     }
 
 
@@ -26,22 +27,49 @@ public class BallBag : MonoBehaviour {
         ChangeColor();
     }
 
+
+    //升级
+    public void LevelUp(BallColor color) {
+        //allBall[(int)color].count++;
+        //UpdateAllBallCount();
+
+        foreach (var i in allBall) {
+            if (i.color == color) {
+                i.count++;
+                UpdateAllBallCount();
+            }
+        }
+    }
+
     //切换颜色
     private void ChangeColor() {
         if (!ballShooter.isAiming) return;
         if (Input.GetKeyDown(KeyCode.A)) {
-            currentIndex = (currentIndex - 1 + turnBall.Count) % turnBall.Count;
-            UpdateBallImage();
+            LastColor();
         }
         if (Input.GetKeyDown(KeyCode.D)) {
-            currentIndex = (currentIndex + 1) % turnBall.Count;
-            UpdateBallImage();
+            NextColor();
         }
     }
+    public void NextColor() {
+        do {
+            currentIndex = (currentIndex + 1) % turnBall.Count;
+        }
+        while (turnBall[currentIndex].count == 0);
 
+        UpdateBallImage();
+    }
+    public void LastColor() {
+        do {
+            currentIndex = (currentIndex - 1 + turnBall.Count) % turnBall.Count;
+        }
+        while (turnBall[currentIndex].count == 0);
 
-    //重新装弹
-    private void ReloadTurnBall() {
+        UpdateBallImage();
+    }
+
+    //小球装弹初始化
+    private void InitiateTurnBall() {
         foreach (var b in allBall) {
             BallInfo newBall = new BallInfo(b.color, b.count);
             turnBall.Add(newBall);
@@ -54,6 +82,19 @@ public class BallBag : MonoBehaviour {
         }
     }
 
+    //重新装弹
+    private void ReloadTurnBall() {
+        for (int i = 0; i < turnBall.Count; i++) {
+            turnBall[i].count = allBall[i].count;
+            UpdateBallImage();
+            UpdateAllBallCount();
+        }
+        //刷新每一个turnballcount
+        for (int i = 0; i < allBall.Count; i++) {
+            turnBallCount[i].text = turnBall[i].count.ToString();
+        }
+    }
+
     //重新装弹检查
     public void ReloadCheck() {
         foreach (var i in turnBall) {
@@ -63,6 +104,7 @@ public class BallBag : MonoBehaviour {
         }
         //全为0时，重新装弹
         ReloadTurnBall();
+        GameManager.Instance.NextTurn();
     }
 
 
@@ -81,7 +123,7 @@ public class BallBag : MonoBehaviour {
                 currentBallImage.GetComponent<SpriteRenderer>().color = new Color(100f / 255f, 1, 100f / 255f, 1);
                 break;
             case BallColor.Purple:
-                currentBallImage.GetComponent<SpriteRenderer>().color = new Color(200f/255f, 100f / 255f, 1, 1);
+                currentBallImage.GetComponent<SpriteRenderer>().color = new Color(200f / 255f, 100f / 255f, 1, 1);
                 break;
             case BallColor.White:
                 currentBallImage.GetComponent<SpriteRenderer>().color = new Color(225f / 255f, 225f / 255f, 225f / 255f, 1);
@@ -94,7 +136,7 @@ public class BallBag : MonoBehaviour {
 
     //数字更新
     private void UpdateTurnBallCount(int index) {
-        turnBallCount[index].text= turnBall[index].count.ToString();
+        turnBallCount[index].text = turnBall[index].count.ToString();
     }
 
     private void UpdateAllBallCount() {
