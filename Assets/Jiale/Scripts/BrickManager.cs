@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class BrickManager : MonoBehaviour {
     public List<GameObject> brickPrefab;
-    [SerializeField] private int columns = 15;
+    [SerializeField] private int columns = 11;
     [SerializeField] private int dropDistance = 2;
     [SerializeField] private int startY = 1;
+    [SerializeField] private int generateOffsetX = -2;
     [SerializeField] private float gameOverY = -4;
 
     private List<GameObject> brickInScreen = new List<GameObject>();
@@ -58,7 +59,7 @@ public class BrickManager : MonoBehaviour {
         for (int i = 0; i < columns; i++) {
             if (Random.value < 0.5f) continue; // 随机决定是否生成砖块
 
-            Vector3 spawnPos = new Vector3(ColumnToCoord(i), startY, 0);
+            Vector3 spawnPos = new Vector3(ColumnToCoord(i)+generateOffsetX, startY, 0);
 
             GameObject brick = Instantiate(brickPrefab[Random.Range(0, brickPrefab.Count)], spawnPos, Quaternion.identity);
 

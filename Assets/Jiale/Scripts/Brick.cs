@@ -27,6 +27,7 @@ public class Brick : MonoBehaviour {
         if (hp <= 0) {
             //±»»÷Ëé
             Destroy(this.gameObject);
+            //GameManager.Instance.GetCoin(color);
         }
     }
 

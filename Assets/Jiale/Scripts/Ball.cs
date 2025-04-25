@@ -13,7 +13,7 @@ public class Ball : MonoBehaviour {
             }
             //—’…´œ‡Õ¨
             else {
-                GameManager.Instance.LevelUp(color);
+                GameManager.Instance.GetCoin(color);
                 Destroy(collision.gameObject);
             }
             

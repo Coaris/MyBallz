@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour {
 
     [SerializeField] BallShooter ballShooter;
     [SerializeField] BrickManager brickManager;
+    [SerializeField] CoinManager coinManager;
+    [SerializeField] Shop shop;
 
 
     private void Start() {
@@ -30,6 +32,9 @@ public class GameManager : MonoBehaviour {
     }
 
 
+    public void GetCoin(BallColor color) {
+        coinManager.GetCoin(color);
+    }
 
     public void LevelUp(BallColor color) {
         ballShooter.GetComponent<BallBag>().LevelUp(color);
@@ -45,6 +50,7 @@ public class GameManager : MonoBehaviour {
         Time.timeScale = 1;
         ballShooter.gameObject.SetActive(true);
         brickManager.StartGame();
+        shop.StartGame();
     }
     public void QuitGame() {
         Application.Quit();
@@ -59,4 +65,15 @@ public class GameManager : MonoBehaviour {
         ballShooter.gameObject.SetActive(false);
     }
 
+
+    public void TryPurchase(int index,BallColor _ball, BallColor c1, int newCost1, BallColor c2, int newCost2, BallColor c3, int newCost3) {
+        coinManager.TryPurchase(index, _ball, c1, newCost1, c2, newCost2, c3, newCost3);
+       
+    }
+
+
+
+    public void ReloadGood(int index) {
+        shop.ReloadGood(index);
+    }
 }
