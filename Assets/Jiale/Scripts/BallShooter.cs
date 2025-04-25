@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TreeEditor;
 using UnityEngine;
 
 public class BallShooter : MonoBehaviour {
@@ -13,41 +14,44 @@ public class BallShooter : MonoBehaviour {
 
 
     //状态控制
-    [SerializeField] private bool isAiming;
+    public bool isAiming;
+    [SerializeField] private bool isShooting;
 
     //小球
-    [SerializeField] private GameObject ballPrefab;
+    [SerializeField] private List<GameObject> ballPrefab = new List<GameObject>();
+    private GameObject currentPrefab;
     [SerializeField] private float shootForce = 500f;
 
-    ////小球背包
-    //private List<int> ballBag = new List<int>(5);//1红  2黄  3绿  4紫  5白
-    //private List<int> ballRemaining = new List<int>(5);
+    //小球背包
+    [SerializeField] private BallBag ballbag;
+    private float shooterTimer=0;
+    private float shooterDuration = 0.1f;
 
-    //[Range(0,4)]private int currentBall = 0;
 
-    ////小球切换
-    //[SerializeField] private GameObject currentBallImage;
-    //private Color red = new Color(255 / 255, 100 / 255, 100 / 255);
-    //private Color yellow = new Color(255 / 255, 225 / 255, 100 / 255);
-    //private Color green = new Color(100 / 255, 255 / 255, 100 / 255);
-    //private Color purple = new Color(255 / 255, 100 / 255, 255 / 255);
-    //private Color white = new Color(225 / 255, 225 / 255, 225 / 255);
+    //剩余小球计数器
+    public int ballInScreen = 0;
 
 
     private void Update() {
         Aim();
         DrawAimLine();
+        Shooting();
     }
 
-
-
+    //检查屏幕中是否还有小球，没有则切换到瞄准模式
+    public void CheckBallInScreen(float pos) {
+        if (ballInScreen > 0) return;
+        ballbag.ReloadCheck();
+        StartAim();
+        pos = Mathf.Clamp(pos, -7, 7);
+        Vector3 v = new Vector3(pos, transform.position.y, transform.position.z);
+        transform.position = v;
+    }
     public void StartAim() {
         isAiming = true;
-        //currentBallImage.SetActive(true);
     }
     public void StopAim() {
         isAiming = false;
-        //currentBallImage.SetActive(false);
     }
 
 
@@ -66,16 +70,30 @@ public class BallShooter : MonoBehaviour {
 
             //发射
             if (Input.GetMouseButtonDown(0)) {
-                ShootBall();
+                if (ballbag.IsRemaining()) {
+                    ShootBall();
+                }
             }
         }
     }
     //发射
     private void ShootBall() {
-        GameObject ball = Instantiate(ballPrefab, transform.position, Quaternion.identity);
-        ball.GetComponent<Rigidbody2D>().AddForce(aimDirection * shootForce);
-        //RemoveColor();
+        //isShooting = true;
+        currentPrefab = ballPrefab[ballbag.GetCurrentIndex()];
         StopAim();
+    }
+    private void Shooting() {
+        if (isAiming) return;
+
+        shooterTimer += Time.deltaTime;
+
+        if (ballbag.IsRemaining()&& shooterTimer >= shooterDuration) {
+            shooterTimer = 0f;
+            GameObject ball = Instantiate(currentPrefab, transform.position, Quaternion.identity);
+            ballInScreen++;
+            ballbag.ReduceBall();
+            ball.GetComponent<Rigidbody2D>().AddForce(aimDirection * shootForce);
+        }
     }
 
     //绘制瞄准线
